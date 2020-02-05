@@ -25,6 +25,29 @@ app.get("/api/hello", function (req, res) {
 });
 
 
+//timestamp api... 
+app.get("/api/timestamp/:date_string?", function (req, res) {
+  if (req.params.date_string) {
+    const { date_string: dateString } = req.params;
+    const convertedDate = new Date(dateString);
+    const unixPattern = /\d{5,}/;
+
+    if (unixPattern.test(dateString) && Number(dateString)) {
+      const utcDate = new Date(parseInt(dateString))
+      res.json({ "unix": dateString, "utc": utcDate.toUTCString() });
+    }
+    else if (convertedDate instanceof Date && !isNaN(convertedDate.valueOf())) {
+      res.json({ "unix": convertedDate.getTime(), "utc": convertedDate.toUTCString() });
+    }
+    else {
+      res.json({ "error": "Invalid Date" });
+    }
+  }
+  else {
+    res.json({ "unix": new Date().getTime(), "utc": new Date().toUTCString() });
+  }
+});
+
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
